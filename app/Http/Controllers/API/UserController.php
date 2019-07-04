@@ -1,10 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
+use App\User;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 
-class APIUserController extends Controller
+
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -13,7 +17,7 @@ class APIUserController extends Controller
      */
     public function index()
     {
-        //
+        return User::latest()->paginate(10);
     }
 
     /**
@@ -24,7 +28,21 @@ class APIUserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:100|unique:users',
+            'username' => 'required|string|max:25|unique:users',
+            'mac_address' => 'required|string|regex:/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/',
+            'ip_address' => 'required|ip|string',
+            'active_subscription' => 'required|string',
+            'user_group' => 'required|string',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $hash_password = Hash::make($request->password);
+        $request->merge(['password' => $hash_password]);
+
+        return User::create($request->all());
     }
 
     /**

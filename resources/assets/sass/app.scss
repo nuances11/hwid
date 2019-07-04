@@ -15,3 +15,40 @@ $fa-font-path:"../webfonts";
 @import "~@fortawesome/fontawesome-free/scss/fontawesome.scss";
 @import "~@fortawesome/fontawesome-free/scss/solid.scss";
 @import "~@fortawesome/fontawesome-free/scss/brands.scss";
+
+
+.invalid-feedback{
+    color: red;
+}
+
+.badge-success {
+    color: #ffffff !important;
+    background-color: #28a745 !important;
+}
+
+.badge-danger {
+    color: #ffffff !important;
+    background-color: #dc3545 !important;
+}
+
+.badge-vip{
+    color: #ffffff !important;
+    background-color: gold !important;
+    animation: glowing 5000ms infinite;
+}
+
+.badge-support{
+    color: #ffffff !important;
+    background-color: orange !important;
+}
+.badge-admin{
+    color: #ffffff !important;
+    background-color: gray !important;
+}
+
+@keyframes glowing {
+    0% { box-shadow: 0 0 -10px #c4a300; }
+    40% { box-shadow: 0 0 20px #c4a300; }
+    60% { box-shadow: 0 0 20px #c4a300; }
+    100% { box-shadow: 0 0 -10px #c4a300; }
+}

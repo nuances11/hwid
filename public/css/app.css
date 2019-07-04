@@ -28308,3 +28308,78 @@ readers do not read off random characters that represent icons */
   font-family: 'Font Awesome 5 Brands';
 }
 
+.invalid-feedback {
+  color: red;
+}
+
+.badge-success {
+  color: #ffffff !important;
+  background-color: #28a745 !important;
+}
+
+.badge-danger {
+  color: #ffffff !important;
+  background-color: #dc3545 !important;
+}
+
+.badge-vip {
+  color: #ffffff !important;
+  background-color: gold !important;
+  -webkit-animation: glowing 5000ms infinite;
+          animation: glowing 5000ms infinite;
+}
+
+.badge-support {
+  color: #ffffff !important;
+  background-color: orange !important;
+}
+
+.badge-admin {
+  color: #ffffff !important;
+  background-color: gray !important;
+}
+
+@-webkit-keyframes glowing {
+  0% {
+    -webkit-box-shadow: 0 0 -10px #c4a300;
+            box-shadow: 0 0 -10px #c4a300;
+  }
+
+  40% {
+    -webkit-box-shadow: 0 0 20px #c4a300;
+            box-shadow: 0 0 20px #c4a300;
+  }
+
+  60% {
+    -webkit-box-shadow: 0 0 20px #c4a300;
+            box-shadow: 0 0 20px #c4a300;
+  }
+
+  100% {
+    -webkit-box-shadow: 0 0 -10px #c4a300;
+            box-shadow: 0 0 -10px #c4a300;
+  }
+}
+
+@keyframes glowing {
+  0% {
+    -webkit-box-shadow: 0 0 -10px #c4a300;
+            box-shadow: 0 0 -10px #c4a300;
+  }
+
+  40% {
+    -webkit-box-shadow: 0 0 20px #c4a300;
+            box-shadow: 0 0 20px #c4a300;
+  }
+
+  60% {
+    -webkit-box-shadow: 0 0 20px #c4a300;
+            box-shadow: 0 0 20px #c4a300;
+  }
+
+  100% {
+    -webkit-box-shadow: 0 0 -10px #c4a300;
+            box-shadow: 0 0 -10px #c4a300;
+  }
+}
+

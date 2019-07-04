@@ -25,12 +25,12 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>John Doe</td>
-                                    <td>sample@sample.com</td>
-                                    <td>ASAHSJHAJSHA</td>
-                                    <td>192.168.1.1</td>
-                                    <td>Subscribed</td>
+                                <tr v-for="user in users" :key="user.id">
+                                    <td>{{ user.name }} <span class="ml-3" v-html="getUserGroup(user.user_group)"></span> </td>
+                                    <td>{{ user.email }}</td>
+                                    <td>{{ user.mac_address }}</td>
+                                    <td>{{ user.ip_address }}</td>
+                                    <td v-html="isSubscribed(user.active_subscription)"></td>
                                     <td>
                                         <a href="#">
                                             <i class="fas fa-user-edit text-success"></i>
@@ -70,6 +70,12 @@
                                 <has-error :form="form" field="name"></has-error>
                             </div>
                             <div class="form-group">
+                                <label>Username</label>
+                                <input v-model="form.username" type="text" name="username"
+                                       class="form-control" :class="{ 'is-invalid': form.errors.has('username') }">
+                                <has-error :form="form" field="username"></has-error>
+                            </div>
+                            <div class="form-group">
                                 <label>Email</label>
                                 <input v-model="form.email" type="email" name="email"
                                        class="form-control" :class="{ 'is-invalid': form.errors.has('email') }">
@@ -83,9 +89,9 @@
                             </div>
                             <div class="form-group">
                                 <label>Confirm Password</label>
-                                <input v-model="form.confirm_password" type="password" name="confirm_password"
-                                       class="form-control" :class="{ 'is-invalid': form.errors.has('confirm_password') }">
-                                <has-error :form="form" field="confirm_password"></has-error>
+                                <input v-model="form.password_confirmation" type="password" name="password_confirmation"
+                                       class="form-control" :class="{ 'is-invalid': form.errors.has('password_confirmation') }">
+                                <has-error :form="form" field="password_confirmation"></has-error>
                             </div>
                             <div class="form-group">
                                 <label>MAC Address</label>
@@ -100,28 +106,23 @@
                                 <has-error :form="form" field="ip_address"></has-error>
                             </div>
                             <div class="form-group">
-                                <label>IP Address</label>
-                                <input v-model="form.ip_address" type="text" name="ip_address"
-                                       class="form-control" :class="{ 'is-invalid': form.errors.has('ip_address') }">
-                                <has-error :form="form" field="ip_address"></has-error>
-                            </div>
-                            <div class="form-group">
                                 <label for="type">Active Subscription</label>
-                                <select v-model="form.active_subscription" name="active_subscription" id="active_subscription" class="form-control" :class="{ 'is-invalid' : form.errors.has('active_subscription')}">
+                                <select v-model="form.active_subscription" name="c" id="active_subscription" class="form-control" :class="{ 'is-invalid' : form.errors.has('active_subscription')}">
                                     <option value="">Select Subscription</option>
                                     <option value="1">Suscribed</option>
                                     <option value="0">Not Subscribed</option>
                                 </select>
-                                <has-error :form="form" field="type"></has-error>
+                                <has-error :form="form" field="active_subscription"></has-error>
                             </div>
                             <div class="form-group">
                                 <label for="type">User Group</label>
                                 <select v-model="form.user_group" name="user_group" id="user_group" class="form-control" :class="{ 'is-invalid' : form.errors.has('user_group')}">
                                     <option value="">Select Subscription</option>
-                                    <option value="1">Suscribed</option>
-                                    <option value="0">Not Subscribed</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="support">Support</option>
+                                    <option value="vip">VIP</option>
                                 </select>
-                                <has-error :form="form" field="type"></has-error>
+                                <has-error :form="form" field="user_group"></has-error>
                             </div>
                     </div>
                     <div class="modal-footer">
@@ -139,8 +140,10 @@
     export default {
         data() {
             return {
+                users : {},
                 form : new Form({
                     name : '',
+                    username : '',
                     email : '',
                     password : '',
                     mac_address : '',
@@ -151,13 +154,35 @@
             }
         },
         methods: {
+            getUserGroup(group){
+                if (group == 'admin') {
+                    return "<span class='badge badge-admin'>Admin</span>"
+                }else if(group == 'support'){
+                    return "<span class='badge badge-support'>Support</span>"
+                }else{
+                    return "<span class='badge badge-vip'>VIP</span>"
+                }
+            },
+            isSubscribed(status){
+                if (status) {
+                    return "<span class='badge badge-success'>Subscribed</span>"
+                }else{
+                    return "<span class='badge badge-danger'>Not Subscribed</span>"
+                }
+            },
+            loadUsers(){
+                axios.get('api/user')
+                .then(
+                    ({ data }) => (this.users = data.data)
+                );
+            },
             createUser() {
                 // Submit the form via a POST request
                 this.form.post('api/user');
             }
         },
-        mounted() {
-            console.log('Component mounted.')
+        created() {
+            this.loadUsers();
         }
     }
 </script>
