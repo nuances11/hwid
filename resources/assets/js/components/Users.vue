@@ -36,7 +36,7 @@
                                             <i class="fas fa-user-edit text-success"></i>
                                         </a>
                                         &nbsp;
-                                        <a href="#">
+                                        <a href="#" @click="deleteUser(user.id)">
                                             <i class="fas fa-user-times text-danger"></i>
                                         </a>
                                     </td>
@@ -154,6 +154,40 @@
             }
         },
         methods: {
+            deleteUser(id){
+                swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+
+                    if (result.value) {
+                        this.$Progress.start()
+                        this.form.delete('api/user/' + id)
+                            .then(() => {
+                                this.$Progress.finish()
+                                Event.$emit('afterEvent');
+                                swal.fire(
+                                    'Deleted!',
+                                    'User has been deleted.',
+                                    'success'
+                                )
+                            })
+                            .catch(() => {
+                                this.$Progress.fail()
+                                swal.fire(
+                                    'Failed!',
+                                    'There is an issue deleting the user.',
+                                    'warning'
+                                )
+                            });
+                    }
+                })
+            },
             getUserGroup(group){
                 if (group == 'admin') {
                     return "<span class='badge badge-admin'>Admin</span>"
@@ -164,7 +198,7 @@
                 }
             },
             isSubscribed(status){
-                if (status) {
+                if (status === '1') {
                     return "<span class='badge badge-success'>Subscribed</span>"
                 }else{
                     return "<span class='badge badge-danger'>Not Subscribed</span>"
@@ -177,11 +211,27 @@
                 );
             },
             createUser() {
+                this.$Progress.start()
                 // Submit the form via a POST request
-                this.form.post('api/user');
+                this.form.post('api/user')
+                    .then(() => {
+                        this.$Progress.finish()
+                        Event.$emit('afterEvent');
+                        $('#userModal').modal('hide')
+                        toast.fire({
+                            type: 'success',
+                            title: 'User added successfully'
+                        })
+                    })
+                    .catch(() => {
+                        this.$Progress.fail()
+                    });
             }
         },
         created() {
+            Event.$on('afterEvent', () => {
+                this.loadUsers();
+            })
             this.loadUsers();
         }
     }
