@@ -65,7 +65,28 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $user = User::findOrFail($id);
+
+        $this->validate($request, [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:100|unique:users,email,' . $user->id,
+            'username' => 'required|string|max:25|unique:users,username,' . $user->id,
+            'mac_address' => 'required|string|regex:/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/',
+            'ip_address' => 'required|ip|string',
+            'active_subscription' => 'required|string',
+            'user_group' => 'required|string',
+            'password' => 'sometimes|string|min:8|confirmed',
+        ]);
+
+        if ($request->has('password')){
+            $password_hash = Hash::make($request->password);
+            $request->merge([
+                'password' => $password_hash
+            ]);
+        }
+
+        $user->update($request->all());
+        return ['message' => 'Update user'];
     }
 
     /**

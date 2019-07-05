@@ -6,7 +6,7 @@
                     <div class="card-header">
                         <h3><i class="fas fa-list-alt"></i> User List</h3>
                         <div class="card-tools">
-                            <button class="btn btn-success" data-toggle="modal" data-target="#userModal">
+                            <button class="btn btn-success" @click.prevent="newUserModal">
                                 <i class="fas fa-user-plus"></i> &nbsp; Add New
                             </button>
                         </div>
@@ -25,14 +25,14 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="user in users" :key="user.id">
+                                <tr v-for="user in users.data" :key="user.id">
                                     <td>{{ user.name }} <span class="ml-3" v-html="getUserGroup(user.user_group)"></span> </td>
                                     <td>{{ user.email }}</td>
                                     <td>{{ user.mac_address }}</td>
                                     <td>{{ user.ip_address }}</td>
                                     <td v-html="isSubscribed(user.active_subscription)"></td>
                                     <td>
-                                        <a href="#">
+                                        <a href="#" @click="editUserModal(user)">
                                             <i class="fas fa-user-edit text-success"></i>
                                         </a>
                                         &nbsp;
@@ -45,6 +45,12 @@
                         </table>
                     </div>
                     <!-- /.card-body -->
+                    <div class="card-footer">
+                        <pagination :data="users" @pagination-change-page="getResults">
+                            <span slot="prev-nav">&lt; Previous</span>
+                            <span slot="next-nav">Next &gt;</span>
+                        </pagination>
+                    </div>
                 </div>
                 <!-- /.card -->
             </div>
@@ -56,12 +62,13 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="userModalLabel">Add New User</h5> 
+                        <h5 v-show="!editUser" class="modal-title" id="userModalLabel">Add New User</h5>
+                        <h5 v-show="editUser" class="modal-title" id="userModalLabel">Update User</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form role="form" @submit.prevent="createUser">
+                    <form id="userForm" role="form" @submit.prevent="editUser ? updateUser() : createUser()">
                     <div class="modal-body">
                             <div class="form-group">
                                 <label>Name</label>
@@ -127,7 +134,8 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save changes</button>
+                        <button v-show="editUser" type="submit" class="btn btn-success">Update</button>
+                        <button v-show="!editUser" type="submit" class="btn btn-primary">Save changes</button>
                     </div>
                     </form>
                 </div>
@@ -140,8 +148,10 @@
     export default {
         data() {
             return {
+                editUser : false,
                 users : {},
                 form : new Form({
+                    id : '',
                     name : '',
                     username : '',
                     email : '',
@@ -154,6 +164,46 @@
             }
         },
         methods: {
+            // Our method to GET results from a Laravel endpoint
+            getResults(page = 1) {
+                axios.get('api/user?page=' + page)
+                    .then(response => {
+                        this.users = response.data;
+                    });
+            },
+            updateUser(){
+                this.$Progress.start()
+                  this.form.put('api/user/' + this.form.id)
+                    .then(() => {
+                        $('#userModal').modal('hide')
+                        toast.fire({
+                            type: 'success',
+                            title: 'User updated successfully'
+                        })
+                        Event.$emit('afterEvent');
+                        this.$Progress.finish()
+                    })
+                    .catch(() => {
+                        toast.fire({
+                            type: 'warning',
+                            title: 'Update user failed'
+                        })
+                        this.$Progress.fail()
+                    })
+            },
+            newUserModal(){
+                this.editUser = false;
+                this.form.reset();
+                this.form.clear();
+                $('#userModal').modal('show')
+            },
+            editUserModal(user){
+                this.editUser = true;
+                this.form.reset();
+                this.form.clear();
+                $('#userModal').modal('show')
+                this.form.fill(user)
+            },
             deleteUser(id){
                 swal.fire({
                     title: 'Are you sure?',
@@ -207,7 +257,7 @@
             loadUsers(){
                 axios.get('api/user')
                 .then(
-                    ({ data }) => (this.users = data.data)
+                    ({ data }) => (this.users = data)
                 );
             },
             createUser() {
