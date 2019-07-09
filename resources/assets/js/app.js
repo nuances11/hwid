@@ -13,6 +13,9 @@ import VueRouter from 'vue-router'
 import VueProgressBar from 'vue-progressbar'
 import Swal from 'sweetalert2'
 
+import Gate from "./Gate"
+Vue.prototype.$gate = new Gate(window.user)
+
 const Toast = Swal.mixin({
     toast: true,
     position: 'top-end',

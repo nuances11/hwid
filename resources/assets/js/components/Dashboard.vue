@@ -6,7 +6,7 @@
                     <div class="panel-heading">Dashboard Component</div>
 
                     <div class="panel-body">
-                        I'm an dashboard component!
+                        I'm an dashboard component! 
                     </div>
                 </div>
             </div>

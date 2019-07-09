@@ -59,7 +59,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 						data-accordion="false">
 						<!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
-
+			   			@if(Auth::user()->can('isAdmin') || Auth::user()->can('isSupport'))
 						<li class="nav-item">
 							<router-link to="/dashboard" class="nav-link">
 								<i class="fab fa-dashcube"></i>
@@ -76,6 +76,17 @@ scratch. This page gets rid of all links and provides the needed markup only.
 								</p>
 							</router-link>
 						</li>
+						@endif
+						@can('isVip')
+						<li class="nav-item">
+							<router-link to="/" class="nav-link">
+								<i class="fas fa-user-tie"></i>
+								<p>
+									My Profile
+								</p>
+							</router-link>
+						</li>
+						@endcan
 						<li class="nav-item"> 
 							<a class="nav-link" href="{{ route('logout') }}"
 								onclick="event.preventDefault();
@@ -125,6 +136,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
 		</footer>
 	</div>
 	<!-- ./wrapper -->
+	@auth
+		<script>
+			window.user = @json(auth()->user())
+		</script>
+	@endauth
 
 	<!-- REQUIRED SCRIPTS -->
 
