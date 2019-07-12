@@ -36,6 +36,10 @@ window.swal = Swal
 window.Form = Form
 Vue.component(HasError.name, HasError)
 Vue.component(AlertError.name, AlertError)
+Vue.component(
+    'not-found',
+    require('./components/NotFound.vue')
+);
 
 Vue.component('pagination', require('laravel-vue-pagination'));
 

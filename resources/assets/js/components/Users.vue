@@ -1,6 +1,12 @@
+<style>
+.not-found{
+    width: 100%;
+}
+</style>
+
 <template>
     <div class="container">
-        <div class="row" v-if="$gate.isAdmin()">
+        <div class="row" v-if="$gate.isAdmin() || $gate.isSupport()">
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
@@ -54,6 +60,10 @@
                 </div>
                 <!-- /.card -->
             </div>
+        </div>
+
+        <div v-if="!$gate.isAdmin() || !$gate.isSupport()">
+            <not-found></not-found>
         </div>
 
         <!-- Modal -->
