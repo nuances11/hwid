@@ -50,6 +50,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 					</div>
 					<div class="info">
 						<a href="#" class="d-block">{{ Auth::user()->name }}</a>
+						<p>{{ Auth::user()->user_group }}</p>
 					</div>
 				</div>
 
@@ -79,7 +80,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 						@endif
 						@can('isVip')
 						<li class="nav-item">
-							<router-link to="/" class="nav-link">
+							<router-link to="/profile" class="nav-link">
 								<i class="fas fa-user-tie"></i>
 								<p>
 									My Profile

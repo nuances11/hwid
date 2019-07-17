@@ -12,6 +12,7 @@ import { Form, HasError, AlertError } from 'vform'
 import VueRouter from 'vue-router'
 import VueProgressBar from 'vue-progressbar'
 import Swal from 'sweetalert2'
+import moment from 'moment'
 
 import Gate from "./Gate"
 Vue.prototype.$gate = new Gate(window.user)
@@ -52,6 +53,14 @@ let routes = [
     { path: '/users', component: require('./components/Users.vue') }
 
 ]
+
+Vue.filter('formatDate', function(date) {
+    return moment(date).format('MMMM Do YYYY')
+})
+
+Vue.filter('relativeTime', function(time) {
+    return moment(time).startOf('day').fromNow(); 
+})
 
 const router = new VueRouter ({
     mode: 'history',

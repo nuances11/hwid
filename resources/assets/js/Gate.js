@@ -22,5 +22,11 @@ export default class Gate{
 
     }
 
+    isAdminOrAuthor(){
+        if (this.user.user_group === 'admin' || this.user.user_group === 'support') {
+            return true
+        }
+    }
+
 
 }

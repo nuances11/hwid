@@ -6,7 +6,7 @@
 
 <template>
     <div class="container">
-        <div class="row" v-if="$gate.isAdmin() || $gate.isSupport()">
+        <div class="row" v-if="$gate.isAdminOrAuthor()">
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
@@ -62,7 +62,7 @@
             </div>
         </div>
 
-        <div v-if="!$gate.isAdmin() || !$gate.isSupport()">
+        <div v-if="!$gate.isAdminOrAuthor()">
             <not-found></not-found>
         </div>
 
@@ -265,7 +265,7 @@
                 }
             },
             loadUsers(){
-                if(this.$gate.isAdmin()){
+                if(this.$gate.isAdminOrAuthor()){
                     axios.get('api/user')
                     .then(
                         ({ data }) => (this.users = data)
