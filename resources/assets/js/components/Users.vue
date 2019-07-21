@@ -38,11 +38,11 @@
                                     <td>{{ user.ip_address }}</td>
                                     <td v-html="isSubscribed(user.active_subscription)"></td>
                                     <td>
-                                        <a href="#" @click="editUserModal(user)">
+                                        <a href="#" @click="editUserModal(user)" v-if="checkUserPermission(user.user_group)">
                                             <i class="fas fa-user-edit text-success"></i>
                                         </a>
                                         &nbsp;
-                                        <a href="#" @click="deleteUser(user.id)">
+                                        <a href="#" @click="deleteUser(user.id)" v-if="checkUserPermission(user.user_group)">
                                             <i class="fas fa-user-times text-danger"></i>
                                         </a>
                                     </td>
@@ -135,7 +135,7 @@
                                 <label for="type">User Group</label>
                                 <select v-model="form.user_group" name="user_group" id="user_group" class="form-control" :class="{ 'is-invalid' : form.errors.has('user_group')}">
                                     <option value="">Select Subscription</option>
-                                    <option value="admin">Admin</option>
+                                    <option value="admin" v-if="$gate.isAdmin()">Admin</option>
                                     <option value="support">Support</option>
                                     <option value="vip">VIP</option>
                                 </select>
@@ -289,6 +289,17 @@
                     .catch(() => {
                         this.$Progress.fail()
                     });
+            },
+            checkUserPermission(user_group){
+                if(this.$gate.isSupport()){
+                    if (user_group === 'vip' || user_group === 'support') {
+                        return true;
+                    }
+                }
+
+                if (this.$gate.isAdmin()) {
+                    return true;
+                }
             }
         },
         created() {

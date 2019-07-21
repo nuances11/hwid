@@ -80,6 +80,9 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
+        // $current_user = auth('api')->user();
+
+        // if($current_user->user_group ==)
 
         $this->validate($request, [
             'name' => 'required|string|max:255',
@@ -121,5 +124,34 @@ class UserController extends Controller
     public function profile()
     {
         return auth('api')->user();
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = auth('api')->user();
+
+        $this->validate($request, [
+            'mac_address' => 'required|string|regex:/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/',
+            'ip_address' => 'required|ip|string',
+            'password' => 'sometimes|string|min:8|confirmed',
+        ]);
+
+        $input = $request->only(['mac_address', 'password', 'ip_address']);
+
+
+        if ($request->has('password')){
+            $password_hash = Hash::make($request->password);
+            $request->merge([
+                'password' => $password_hash
+            ]);
+        }
+
+        if(time() - strtotime($user->updated_at) < 10800){
+            return response()->json(['success'=> FALSE, 'message' => 'You have to wait 3hrs before updating your profile. Please try again later.']);
+        }else{
+            $user->update($request->all());
+            return ['success' => TRUE,'message' => 'Profile updated'];
+        }
+
     }
 }

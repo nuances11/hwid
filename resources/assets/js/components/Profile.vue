@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <div class="row">
+        <div class="row" v-if="$gate.isVip()">
             <div class="col-md-3">
 
                 <!-- Profile Image -->
@@ -100,16 +100,16 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="password_confirmaation" class="col-sm-3 control-label">Confirm Password</label>
+                                        <label for="password_confirmation" class="col-sm-3 control-label">Confirm Password</label>
 
                                         <div class="col-sm-9">
-                                            <input v-model="form.password_confirmaation" type="text" class="form-control" id="password_confirmaation" name="password_confirmaation" placeholder="Confirm Password" :class="{ 'is-invalid' : form.errors.has('password_confirmaation')}">
+                                            <input v-model="form.password_confirmation" type="text" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Confirm Password" :class="{ 'is-invalid' : form.errors.has('password_confirmation')}">
                                         </div>
                                         <has-error :form="form" field="password_confirmation"></has-error>
                                     </div>
                                     <div class="form-group">
                                         <div class="col-sm-offset-2 col-sm-9">
-                                            <button type="submit" class="btn btn-success">Update</button>
+                                            <button @click.prevent="updateProfile()" type="submit" class="btn btn-success">Update</button>
                                         </div>
                                     </div>
                                 </form>
@@ -122,6 +122,9 @@
                 <!-- /.nav-tabs-custom -->
             </div>
             <!-- /.col -->
+        </div>
+        <div v-if="!$gate.isVip()">
+            <not-found></not-found>
         </div>
     </div>
 </template>
@@ -146,11 +149,10 @@
             }
         },
         created() {
-            axios.get('api/profile')
-            .then(( {data} ) => (
-                    this.form.fill(data)
-                )
-            );
+            Event.$on('afterEvent', () => {
+                this.getUserProfile();
+            })
+            this.getUserProfile();
         },
         methods: {
             isSubscribed(status){
@@ -159,6 +161,44 @@
                 }else{
                     return "<span class='badge badge-danger'>Not Subscribed</span>"
                 }
+            },
+            getUserProfile(){
+                this.$Progress.start()
+                axios.get('api/profile')
+                .then(( {data} ) => {
+                        this.form.fill(data)
+                        this.$Progress.finish()
+                    }
+                );
+            },
+            updateProfile(){
+                this.$Progress.start()
+                  this.form.put('api/profile/')
+                    .then((response) => {
+                        console.log(response);
+                        if(response.data.success){
+                            toast.fire({
+                                type: 'success',
+                                title: 'User updated successfully'
+                            })
+                            Event.$emit('afterEvent');
+                            this.$Progress.finish()
+                        }else{
+                            toast.fire({
+                                type: 'warning',
+                                title: response.data.message,
+                            })
+                            this.$Progress.fail()
+                        }
+                    })
+                    .catch(() => {
+                        toast.fire({
+                                type: 'warning',
+                                title: 'Error on updating user.',
+                            })
+                        this.$Progress.fail()
+                        
+                    })
             },
         }
     }
