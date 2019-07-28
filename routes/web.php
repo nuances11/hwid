@@ -17,7 +17,14 @@
 
 Route::get('/', 'Auth\LoginController@showLoginForm')->name('login');
 
-Auth::routes();
+//Route::get('/register', 'HomeController@notFound')->name('register');
+
+//Auth::routes();
+// Authentication Routes...
+Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
+Route::post('login', 'Auth\LoginController@login');
+Route::post('logout', 'Auth\LoginController@logout')->name('logout');
+//Auth::routes(['register' => false]);
 
 Route::get('/home', 'HomeController@index')->name('home');
 
